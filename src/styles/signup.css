@@ -86,3 +86,12 @@
 .signup-button:hover:not(:disabled) {
   background-color: #2563eb;
 }
+
+.field-error {
+  text-align: left;
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left:6px;
+  margin-bottom: 4px;
+}

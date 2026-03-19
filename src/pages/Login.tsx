@@ -1,28 +1,48 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { loginUser, clearAuthError } from "../features/auth/authSlice";
 import { Navigate, Link } from "react-router-dom";
 import "../styles/login.css";
 
-
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const { user, loading, error } = useAppSelector((s) => s.auth);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    if (error) {
-      dispatch(clearAuthError());
-    }
-  }, [dispatch, error]);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
 
   if (user) {
     return <Navigate to="/dashboard" />;
   }
 
+  const validate = () => {
+    const newErrors = {
+      email: "",
+      password: "",
+    };
+
+    if (!email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(email))
+      newErrors.email = "Invalid email format";
+
+    if (!password) newErrors.password = "Password is required";
+
+    setErrors(newErrors);
+
+    return Object.values(newErrors).some((err) => err);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const hasError = validate();
+    if (hasError) return;
+
     dispatch(loginUser({ email, password }));
   };
 
@@ -30,27 +50,46 @@ export default function LoginPage() {
     <div className="login-container">
       <div className="login-card">
         <h2 className="login-title">Login</h2>
-
         <form onSubmit={handleSubmit} className="login-form">
-          <input
-            className="login-input"
-            placeholder="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <div>
+            <input
+              className="login-input"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors((prev) => ({ ...prev, email: "" }));
+                dispatch(clearAuthError()); 
+              }}
+            />
+            {errors.email && (
+              <p className="field-error">{errors.email}</p>
+            )}
+          </div>
+          <div>
+            <input
+              className="login-input"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrors((prev) => ({ ...prev, password: "" }));
+                dispatch(clearAuthError());
+              }}
+            />
+            {errors.password && (
+              <p className="field-error">{errors.password}</p>
+            )}
+          </div>
 
-          <input
-            className="login-input"
-            type="password"
-            placeholder="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-
-          <button className="login-button" type="submit" disabled={loading}>
-            {loading ? "Loading..." : "Login"}
+          <button
+            className="login-button"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
           </button>
-
           {error && <p className="login-error">{error}</p>}
         </form>
 

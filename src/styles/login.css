@@ -98,9 +98,11 @@
   cursor: not-allowed;
 }
 
-.login-error {
-  margin: 0.25rem 0 0 0;
-  font-size: 0.85rem;
-  color: #ef4444;
+.field-error {
   text-align: left;
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left:6px;
+  margin-bottom: 4px;
 }

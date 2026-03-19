@@ -16,7 +16,6 @@ export const loginApi = async (email: string, password: string): Promise<AuthUse
   };
 };
 
-// NEW signup function
 export const signupApi = async (
   name: string,
   email: string,

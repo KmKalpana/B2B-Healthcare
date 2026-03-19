@@ -1,45 +1,65 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { loginApi, logoutApi, signupApi } from "./authService";
-
-export type AuthUser = {
-  email: string | null;
-};
-
-type AuthState = {
-  user: AuthUser | null;
-  loading: boolean;
-  error: string | null;
-};
+import { AuthState, AuthUser } from "./authTypes";
+import { getStoredUser } from "./getStoredUser";
 
 const initialState: AuthState = {
-  user: JSON.parse(localStorage.getItem("user") || "null"), // ✅ persisted
+  user: getStoredUser(),
   loading: false,
   error: null,
 };
 
-// LOGIN
-export const loginUser = createAsyncThunk(
-  "auth/login",
-  async ({ email, password }: any, thunkAPI) => {
-    try {
-      return await loginApi(email, password);
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message);
-    }
+const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+
+const mapAuthError = (err: any): string => {
+  const message = err?.message || "";
+
+  if (
+    err?.code === "auth/invalid-credential" ||
+    err?.code === "auth/user-not-found" ||
+    err?.code === "auth/wrong-password" ||
+    message.includes("invalid-credential") ||
+    message.includes("user-not-found") ||
+    message.includes("wrong-password")
+  ) {
+    return "Invalid email or password";
   }
-);
+
+  if (
+    err?.code === "auth/invalid-email" ||
+    message.includes("invalid-email")
+  ) {
+    return "Invalid email format";
+  }
+
+  return "Something went wrong";
+};
+
+// LOGIN
+export const loginUser = createAsyncThunk<
+  AuthUser,
+  { email: string; password: string },
+  { rejectValue: string }
+>("auth/login", async ({ email, password }, thunkAPI) => {
+  try {
+    return await loginApi(email, password);
+  } catch (err: any) {
+    return thunkAPI.rejectWithValue(mapAuthError(err));
+  }
+});
 
 // SIGNUP
-export const signupUser = createAsyncThunk(
-  "auth/signup",
-  async ({ name, email, password }: any, thunkAPI) => {
-    try {
-      return await signupApi(name, email, password);
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message);
-    }
+export const signupUser = createAsyncThunk<
+  AuthUser,
+  { name: string; email: string; password: string },
+  { rejectValue: string }
+>("auth/signup", async ({ name, email, password }, thunkAPI) => {
+  try {
+    return await signupApi(name, email, password);
+  } catch (err: any) {
+    return thunkAPI.rejectWithValue(mapAuthError(err));
   }
-);
+});
 
 // LOGOUT
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
@@ -53,46 +73,58 @@ const authSlice = createSlice({
     clearAuthError: (state) => {
       state.error = null;
     },
+    setUser: (state, action: PayloadAction<AuthUser | null>) => {
+      state.user = action.payload;
+    },
   },
+
   extraReducers: (builder) => {
     builder
-      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-
-        localStorage.setItem("user", JSON.stringify(action.payload)); // ✅
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({
+            user: action.payload,
+            expiresAt,
+          })
+        );
       })
-      .addCase(loginUser.rejected, (state, action: any) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Login failed";
       })
-
-      // SIGNUP
       .addCase(signupUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-
-        localStorage.setItem("user", JSON.stringify(action.payload)); // ✅
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({
+            user: action.payload,
+            expiresAt,
+          })
+        );
       })
-      .addCase(signupUser.rejected, (state, action: any) => {
+      .addCase(signupUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Signup failed";
       })
-
-      // LOGOUT
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
-        localStorage.removeItem("user"); // ✅
+        state.error = null;
+        localStorage.removeItem("auth");
       });
   },
 });
 
-export const { clearAuthError } = authSlice.actions;
+export const { clearAuthError, setUser } = authSlice.actions;
 export default authSlice.reducer;
