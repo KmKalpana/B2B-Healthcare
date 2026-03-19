@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { loginUser, clearAuthError } from "../features/auth/authSlice";
 import { Navigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import "../styles/login.css";
 
 export default function LoginPage() {
@@ -15,6 +16,7 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+
 
   if (user) {
     return <Navigate to="/dashboard" />;
@@ -37,13 +39,18 @@ export default function LoginPage() {
     return Object.values(newErrors).some((err) => err);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const hasError = validate();
     if (hasError) return;
 
-    dispatch(loginUser({ email, password }));
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+      toast.success("Login successful");
+    } catch (err: any) {
+      toast.error(err || "Invalid email or password");
+    }
   };
 
   return (
@@ -59,13 +66,12 @@ export default function LoginPage() {
               onChange={(e) => {
                 setEmail(e.target.value);
                 setErrors((prev) => ({ ...prev, email: "" }));
-                dispatch(clearAuthError()); 
+                dispatch(clearAuthError());
               }}
             />
-            {errors.email && (
-              <p className="field-error">{errors.email}</p>
-            )}
+            {errors.email && <p className="field-error">{errors.email}</p>}
           </div>
+
           <div>
             <input
               className="login-input"
@@ -90,9 +96,7 @@ export default function LoginPage() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-          {error && <p className="login-error">{error}</p>}
         </form>
-
         <p className="login-subtitle-small">
           New user? <Link to="/signup">Sign up</Link>
         </p>

@@ -4,10 +4,11 @@ import { addPatient, updatePatient } from "../../features/patients/patientSlice"
 import type { Patient } from "../../features/patients/patientTypes";
 import "../../styles/addpatientmodal.css"
 import Button from "../ui/Button";
+import toast from "react-hot-toast";
 
 interface Props {
   isOpen: boolean;
-  patient?: Patient | null;  
+  patient?: Patient | null;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -31,11 +32,11 @@ interface FormErrors {
   general?: string;
 }
 
-export default function PatientModal({ 
-  isOpen, 
-  patient, 
-  onClose, 
-  onSuccess 
+export default function PatientModal({
+  isOpen,
+  patient,
+  onClose,
+  onSuccess
 }: Props) {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -109,49 +110,53 @@ export default function PatientModal({
     return newErrors;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+
+  const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const patientDataBase = {
+      name: formData.name.trim(),
+      age: Number(formData.age),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      gender: formData.gender,
+      city: formData.city.trim(),
+      status: formData.status
+    };
+
+    const patientData = formData.notes.trim()
+      ? { ...patientDataBase, notes: formData.notes.trim() }
+      : patientDataBase;
+
+    if (isEditMode && patient?.id) {
+      await dispatch(updatePatient({
+        id: patient.id,
+        updates: patientData
+      })).unwrap();
+
+      toast.success("Patient updated successfully");
+    } else {
+      await dispatch(addPatient(patientData)).unwrap();
+
+      toast.success("Patient added successfully");
     }
 
-    setLoading(true);
-    try {
-      const patientDataBase = {
-        name: formData.name.trim(),
-        age: Number(formData.age),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        gender: formData.gender,
-        city: formData.city.trim(),
-        status: formData.status
-      };
-
-      const patientData = formData.notes.trim()
-        ? { ...patientDataBase, notes: formData.notes.trim() }
-        : patientDataBase;
-
-      if (isEditMode && patient?.id) {
-        await dispatch(updatePatient({ 
-          id: patient.id, 
-          updates: patientData 
-        })).unwrap();
-      } else {
-        await dispatch(addPatient(patientData)).unwrap();
-      }
-
-      onSuccess();
-      onClose();
-    } catch (error) {
-      console.error("Failed to save:", error);
-      setErrors({ general: "Failed to save patient" });
-    } finally {
-      setLoading(false);
-    }
-  };
+    onSuccess();
+    onClose();
+  } catch (error) {
+    toast.error("Failed to save patient");
+    setErrors({ general: "Failed to save patient" });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -198,7 +203,7 @@ export default function PatientModal({
                 type="number"
                 value={formData.age}
                 onChange={(e) => handleChange("age", e.target.value)}
-                min="0" 
+                min="0"
                 max="120"
                 disabled={loading}
                 className={errors.age ? "error" : ""}
@@ -286,24 +291,24 @@ export default function PatientModal({
             />
           </div>
 
-         <div className="form-actions">
-  <Button
-    variant="secondary"
-    size="md"
-    onClick={onClose}
-    disabled={loading}
-  >
-    Cancel
-  </Button>
-  
-  <Button
-    variant="primary"
-    size="lg"
-    disabled={loading}
-  >
-    {loading ? "Saving..." : (isEditMode ? "Update Patient" : "Add Patient")}
-  </Button>
-</div>
+          <div className="form-actions">
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={onClose}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="primary"
+              size="lg"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : (isEditMode ? "Update Patient" : "Add Patient")}
+            </Button>
+          </div>
         </form>
       </div>
     </div>

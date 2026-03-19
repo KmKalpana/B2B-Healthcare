@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { signupUser } from "../features/auth/authSlice";
 import { Navigate, Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import "../styles/signup.css";
 
 export default function Signup() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { user, loading, error } = useAppSelector((s) => s.auth);
+  const { user, loading } = useAppSelector((s) => s.auth);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -55,9 +56,10 @@ export default function Signup() {
         signupUser({ name, email, password })
       ).unwrap();
 
+      toast.success("Signup successful 🎉");
       navigate("/dashboard");
     } catch (err: any) {
-      console.error(err);
+      toast.error(err || "Signup failed");
     }
   };
 
@@ -65,6 +67,7 @@ export default function Signup() {
     <div className="signup-container">
       <div className="signup-card">
         <h2 className="signup-title">Signup</h2>
+
         <form onSubmit={handleSubmit} className="signup-form">
           <div>
             <input
@@ -76,10 +79,9 @@ export default function Signup() {
                 setErrors((prev) => ({ ...prev, name: "" }));
               }}
             />
-            {errors.name && (
-              <p className="field-error">{errors.name}</p>
-            )}
+            {errors.name && <p className="field-error">{errors.name}</p>}
           </div>
+
           <div>
             <input
               className="signup-input"
@@ -90,10 +92,9 @@ export default function Signup() {
                 setErrors((prev) => ({ ...prev, email: "" }));
               }}
             />
-            {errors.email && (
-              <p className="field-error">{errors.email}</p>
-            )}
+            {errors.email && <p className="field-error">{errors.email}</p>}
           </div>
+
           <div>
             <input
               className="signup-input"
@@ -120,8 +121,7 @@ export default function Signup() {
         </form>
 
         <p className="signup-subtitle-small">
-          Already have an account?{" "}
-          <Link to="/login">Log in</Link>
+          Already have an account? <Link to="/login">Log in</Link>
         </p>
       </div>
     </div>

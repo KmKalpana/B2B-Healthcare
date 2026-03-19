@@ -75,4 +75,4 @@ const patientSlice = createSlice({
 });
 
 export const { toggleView } = patientSlice.actions;
-export default patientSlice.reducer;  // ✅ FIXED: patientSlice.reducer
+export default patientSlice.reducer;

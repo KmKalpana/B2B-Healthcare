@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import { deletePatient } from "../../features/patients/patientSlice";
 import { Patient } from "../../features/patients/patientTypes";
+import toast from "react-hot-toast";
 import "../../styles/deleteModal.css";
 
 interface Props {
@@ -21,11 +22,11 @@ export default function DeleteModal({ isOpen, patient, onClose, onSuccess }: Pro
     setDeleting(true);
     try {
       await dispatch(deletePatient(patient.id)).unwrap();
+      toast.success("Patient deleted successfully");
       onSuccess();
       onClose();
     } catch (error) {
-      console.error("Failed to delete patient:", error);
-      alert("Failed to delete patient. Please try again.");
+      toast.error("Failed to delete patient");
     } finally {
       setDeleting(false);
     }
@@ -37,7 +38,6 @@ export default function DeleteModal({ isOpen, patient, onClose, onSuccess }: Pro
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal delete-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <div className="delete-icon">🗑️</div>
           <h3>Delete Patient</h3>
         </div>
 
