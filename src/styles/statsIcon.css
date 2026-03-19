@@ -1,0 +1,88 @@
+.stat-icon {
+  border-radius: 16px;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 3px solid transparent;
+  backdrop-filter: blur(10px);
+}
+
+/* SIZE VARIANTS */
+.stat-icon-sm {
+  width: 48px;
+  height: 48px;
+  font-size: 1.25rem;
+}
+
+.stat-icon-md {
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+}
+
+.stat-icon-lg {
+  width: 72px;
+  height: 72px;
+  font-size: 1.75rem;
+}
+
+.stat-icon:has(span[data-icon="👥"]) { /* Total */
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.stat-icon:has(span[data-icon="🩺"]) { /* Active */
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.stat-icon:has(span[data-icon="🏥"]) { /* Discharged */
+  background: linear-gradient(135deg, #fed7aa, #fbcfe8);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3);
+}
+
+.stat-icon:has(span[data-icon="🚨"]) { /* Critical */
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+  animation: pulse 2s infinite;
+}
+
+.stat-icon:has(span[data-icon="✅"]) { /* Recovered */
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+}
+
+.stat-icon:has(span[data-icon="🏨"]) { /* Admitted */
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+}
+
+.stat-icon:has(span[data-icon="⚡"]) { /* Emergency */
+  background: linear-gradient(135deg, #fed7aa, #fdba74);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+.stat-icon:has(span[data-icon="📁"]) { /* Archived */
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  box-shadow: 0 6px 20px rgba(107, 114, 128, 0.2);
+}
+
+/* HOVER EFFECTS */
+.stat-icon:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* ANIMATIONS */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@media (max-width: 480px) {
+  .stat-icon-md {
+    width: 52px;
+    height: 52px;
+    font-size: 1.25rem;
+  }
+}

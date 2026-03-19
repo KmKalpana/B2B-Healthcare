@@ -1,0 +1,300 @@
+/* PatientCard Styles */
+.patient-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.patient-card {
+  background: white;
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* ✅ FIXED WIDTH & HEIGHT */
+  width: 360px;           /* Fixed width */
+  min-height: 280px;      /* Minimum height */
+  height: 100%;           /* Fill grid container */
+  
+  border: 2px solid #f8fafc;
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 360px;        /* No grow/shrink, fixed basis */
+  box-sizing: border-box; /* Include padding in width */
+}
+.patient-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.patient-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-color: #3b82f6;
+}
+
+.patient-card:hover::before {
+  opacity: 1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.patient-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  flex-shrink: 0;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 2px solid;
+  backdrop-filter: blur(10px);
+  min-width: fit-content;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.active {
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.status-dot.discharged {
+  background: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+}
+
+.status-dot.archived {
+  background: #6b7280;
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.3);
+}
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot.active {
+  background: #10b981; /* Green */
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.status-dot.discharged {
+  background: #f97316; /* Orange */
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+}
+
+.status-dot.archived {
+  background: #6b7280; /* Gray */
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.3);
+}
+
+/* ✅ NEW STATUS DOTS */
+.status-dot.critical {
+  background: #ef4444; /* Red */
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+}
+
+.status-dot.recover {
+  background: #f59e0b; /* Yellow/Amber */
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+}
+
+.status-dot.emergency {
+  background: #dc2626; /* Dark Red */
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.4);
+}
+
+.status-dot.admitted {
+  background: #3b82f6; /* Blue */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+
+.status-text {
+  text-transform: capitalize;
+  font-size: 0.8rem;
+}
+
+.card-body {
+  margin-bottom: 1.25rem;
+}
+
+.patient-name {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.3;
+}
+
+.patient-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.patient-notes {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  color: #0369a1;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border-left: 4px solid #3b82f6;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.25rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}
+
+.email-preview {
+  color: #3b82f6;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.view-details {
+  color: #6b7280;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.patient-card:hover .view-details {
+  background: #e0e7ff;
+  color: #1d4ed8;
+  transform: translateX(4px);
+}
+
+/* Status badge colors - Dynamic */
+.patient-card .status-badge {
+  transition: all 0.2s ease;
+}
+
+.patient-card:hover .status-badge {
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .patient-card {
+    padding: 1.5rem;
+  }
+  
+  .patient-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+  
+  .patient-name {
+    font-size: 1.25rem;
+  }
+  
+  .patient-meta {
+    gap: 1rem;
+  }
+  
+  .card-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  
+  .email-preview {
+    max-width: 100%;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .patient-card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+  
+  .patient-name {
+    color: #f1f5f9;
+  }
+  
+  .meta-item {
+    color: #cbd5e1;
+  }
+  
+  .view-details {
+    background: #334155;
+    color: #94a3b8;
+  }
+  
+  .patient-card:hover .view-details {
+    background: #475569;
+    color: #60a5fa;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .patient-card {
+    border-width: 3px;
+  }
+  
+  .status-dot {
+    box-shadow: 0 0 0 3px currentColor;
+  }
+}

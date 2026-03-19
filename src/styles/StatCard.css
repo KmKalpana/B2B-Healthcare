@@ -1,0 +1,68 @@
+.stat-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s;
+}
+
+.stat-card:hover::before {
+  left: 100%;
+}
+
+/* SIZE VARIANTS */
+.stat-card-md { height: 240px; min-width: 320px; }
+.stat-card-lg { height: 280px; min-width: 360px; padding: 2.5rem; }
+.stat-card-sm { height: 200px; min-width: 260px; padding: 1.5rem; }
+
+/* TYPE COLORS */
+.stat-card-total { border-top: 4px solid #3b82f6; }
+.stat-card-active { border-top: 4px solid #10b981; }
+.stat-card-discharged { border-top: 4px solid #f97316; }
+.stat-card-critical { border-top: 4px solid #ef4444; }
+.stat-card-recovered { border-top: 4px solid #059669; }
+.stat-card-admitted { border-top: 4px solid #8b5cf6; }
+.stat-card-emergency { border-top: 4px solid #ea580c; }
+.stat-card-archived { border-top: 4px solid #6b7280; }
+
+.stat-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 1rem 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-card .stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.1;
+}

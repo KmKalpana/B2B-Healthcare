@@ -1,0 +1,61 @@
+/* ✅ FIXED SIZES - SAME ACROSS ALL PAGES */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+/* ✅ FIXED LEFT SIDE - SAME SIZE/FONT/COLOR EVERYWHERE */
+.header-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.header-title {
+  font-size: 1.5rem;        /* FIXED */
+  font-weight: 800;          /* FIXED */
+  color: #1e293b;           /* FIXED */
+  line-height: 1.2;         /* FIXED */
+  margin: 0 0 0.25rem 0;    /* FIXED */
+  letter-spacing: -0.02em;  /* FIXED */
+}
+
+.header-subtitle {
+  font-size: 1.1rem;         /* FIXED */
+  font-weight: 500;          /* FIXED */
+  color: #64748b;           /* FIXED */
+  margin: 0;                /* FIXED */
+  line-height: 1.4;
+}
+
+/* ✅ FIXED RIGHT SIDE BUTTONS */
+.header-buttons {
+  display: flex;
+  gap: 1rem;                /* FIXED */
+  flex-shrink: 0;           /* FIXED */
+  align-items: center;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .header-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .header-title {
+    font-size: 1.875rem;     /* FIXED MOBILE */
+  }
+}
