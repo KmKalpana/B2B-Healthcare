@@ -1,10 +1,9 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { fetchAnalytics } from "../features/analytics/analyticsSlice";
+import { fetchPatients } from "../features/patients/patientSlice";
 import { logoutUser } from "../features/auth/authSlice";
-import { patientService } from "../features/patients/patientService";
-import type { Patient } from "../features/patients/patientTypes";
 import "../styles/dashboard.css";
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/StatsCard";
@@ -20,102 +19,54 @@ import { formatTimeAgo } from "../utils/formatters";
 export default function Dashboard() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
   const { user } = useAppSelector((s) => s.auth);
   const { data: analyticsData, loading: analyticsLoading } = useAppSelector(
     (s) => s.analytics
   );
 
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const {
+    list: patients,
+    loading: patientsLoading,
+    isFetched,
+  } = useAppSelector((s) => s.patients);
 
-  const [statsLoading, setStatsLoading] = useState(true);
-  const [activityLoading, setActivityLoading] = useState(true);
-
-  const dataInitializedRef = useRef(false);
-
-  //Load Patients
-  const loadPatientsData = useCallback(async () => {
-    if (dataInitializedRef.current) {
-      setStatsLoading(false);
-      setActivityLoading(false);
-      return;
-    }
-
-    try {
-      setStatsLoading(true);
-      const allPatients = await patientService.getPatients();
-      setPatients(allPatients);
-
-      dataInitializedRef.current = true;
-      setStatsLoading(false);
-
-      return allPatients;
-    } catch (error) {
-      console.error("Error loading patients:", error);
-      setStatsLoading(false);
-    }
-  }, []);
-
-  // Load Activity
-  const loadRecentActivity = useCallback((patientsData: Patient[]) => {
-    if (dataInitializedRef.current && recentActivity.length > 0) {
-      setActivityLoading(false);
-      return;
-    }
-
-    try {
-      setActivityLoading(true);
-
-      const recent = patientsData
-        .slice(0, ACTIVITY.MAX_ITEMS)
-        .map((patient) => ({
-          id: patient.id,
-          icon: ACTIVITY.DEFAULT_ICON,
-          message: `New patient ${patient.name} added`,
-          timeAgo: formatTimeAgo(
-            new Date().getTime() -
-            new Date(patient.createdAt).getTime()
-          ),
-        }));
-
-      setRecentActivity(recent);
-    } catch (error) {
-      console.error("Error loading activity:", error);
-    } finally {
-      setActivityLoading(false);
-    }
-  }, [recentActivity.length]);
-
-  // Main Effect
   useEffect(() => {
     if (!analyticsData && !analyticsLoading) {
       dispatch(fetchAnalytics());
     }
 
-    loadPatientsData().then((patientsData) => {
-      if (patientsData) {
-        loadRecentActivity(patientsData);
-      }
-    });
-  }, []);
+    if (!isFetched && !patientsLoading) {
+      dispatch(fetchPatients());
+    }
+  }, [dispatch, analyticsData, analyticsLoading, isFetched, patientsLoading]);
 
+  const stats = useMemo(() => {
+    return {
+      totalPatients: patients.length,
+      activePatients: patients.filter(
+        (p) => p.status === PATIENT_STATUS.ACTIVE
+      ).length,
+      dischargedPatients: patients.filter(
+        (p) => p.status === PATIENT_STATUS.DISCHARGED
+      ).length,
+    };
+  }, [patients]);
 
-  // Logout
+  const recentActivity = useMemo(() => {
+    return patients.slice(0, ACTIVITY.MAX_ITEMS).map((patient) => ({
+      id: patient.id,
+      icon: ACTIVITY.DEFAULT_ICON,
+      message: `New patient ${patient.name} added`,
+      timeAgo: formatTimeAgo(
+        new Date().getTime() -
+          new Date(patient.createdAt).getTime()
+      ),
+    }));
+  }, [patients]);
+
   const handleLogout = async () => {
     await dispatch(logoutUser());
     navigate("/");
-  };
-
-  // Stats
-  const stats = {
-    totalPatients: patients.length,
-    activePatients: patients.filter(
-      (p) => p.status === PATIENT_STATUS.ACTIVE
-    ).length,
-    dischargedPatients: patients.filter(
-      (p) => p.status === PATIENT_STATUS.DISCHARGED
-    ).length,
   };
 
   return (
@@ -155,7 +106,7 @@ export default function Dashboard() {
       <div className="dashboard-main-content">
         {/* Stats */}
         <div className="stats-section">
-          {statsLoading ? (
+          {patientsLoading ? (
             <div className="stats-row">
               <StatsCardSkeleton count={3} size="lg" />
             </div>
@@ -185,7 +136,8 @@ export default function Dashboard() {
         {/* Activity */}
         <div className="recent-section">
           <h3>Recent Activity</h3>
-          {activityLoading ? (
+
+          {patientsLoading ? (
             <>
               <SkeletonLine variant="title" />
               <SkeletonLine variant="line" count={5} />
@@ -194,7 +146,9 @@ export default function Dashboard() {
             <div className="activity-list">
               {recentActivity.map((activity) => (
                 <div key={activity.id} className="activity-item">
-                  <span className="activity-icon">{activity.icon}</span>
+                  <span className="activity-icon">
+                    {activity.icon}
+                  </span>
                   <div>
                     <p>{activity.message}</p>
                     <span className="activity-time">

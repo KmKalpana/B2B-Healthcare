@@ -10,7 +10,6 @@ interface PageHeaderProps {
     variant: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
     size?: 'sm' | 'md' | 'lg';
     onClick: () => void;
-    leftIcon?: string; // ✅ Added back
   }[];
   className?: string;
 }
@@ -27,6 +26,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         <div className="header-title">{title}</div>
         {subtitle && <p className="header-subtitle">{subtitle}</p>}
       </div>
+
       <div className="header-buttons">
         {buttons.map((btn, index) => (
           <Button
@@ -34,9 +34,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             variant={btn.variant}
             size={btn.size || 'md'}
             onClick={btn.onClick}
-            className={index < buttons.length - 1 ? 'header-btn-spacing' : ''}
+            className="header-btn"
           >
-            {btn.label}
+            <span>{btn.label}</span>
           </Button>
         ))}
       </div>

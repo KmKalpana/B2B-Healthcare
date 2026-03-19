@@ -38,7 +38,8 @@ const patientSlice = createSlice({
   initialState: {
     list: [] as Patient[],
     loading: false,
-    view: 'grid' as 'grid' | 'list'
+    view: 'grid' as 'grid' | 'list',
+    isFetched: false,
   },
   reducers: {
     toggleView: (state) => {
@@ -53,6 +54,7 @@ const patientSlice = createSlice({
       .addCase(fetchPatients.fulfilled, (state, action) => {
         state.loading = false;
         state.list = action.payload;
+        state.isFetched = true;
       })
       .addCase(fetchPatients.rejected, (state) => {
         state.loading = false;

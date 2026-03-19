@@ -8,7 +8,7 @@
   cursor: pointer;
   font-size: 14px;
   padding: 0;
-  min-height: 40px;
+  height: 40px;
 }
 
 .btn-sm { padding: 6px 16px; font-size: 13px; }
